@@ -150,7 +150,7 @@ class App extends Component {
               )}
             </div>
             <div className="createAccount">
-              <button type="submit">Create Account</button>
+              <button type="submit">Submit</button>
               <small>Already Have an Account?</small>
             </div>
           </form>
