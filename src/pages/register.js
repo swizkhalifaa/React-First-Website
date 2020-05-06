@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "../App.css";
+import { Link } from "react-router-dom";
 
 const emailRegex = RegExp(
   /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
@@ -91,7 +92,7 @@ class Register extends Component {
     return (
       <div className="wrapper">
         <div className="form-wrapper">
-          <h1>Register Account</h1>
+          <h1>Sign Up</h1>
           <form onSubmit={this.handleSubmit} noValidate>
             <div className="firstName">
               <label htmlFor="firstName">First Name</label>
@@ -151,7 +152,7 @@ class Register extends Component {
             </div>
             <div className="createAccount">
               <button type="submit">Submit</button>
-              <small>Already Have an Account?</small>
+              <Link to="/login">Already Have an Account?</Link>
             </div>
           </form>
         </div>

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "../App.css";
+import { Link } from "react-router-dom";
 
 const emailRegex = RegExp(
   /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
@@ -93,34 +94,6 @@ class Login extends Component {
         <div className="form-wrapper">
           <h1>Login</h1>
           <form onSubmit={this.handleSubmit} noValidate>
-            <div className="firstName">
-              <label htmlFor="firstName">First Name</label>
-              <input
-                className={formErrors.firstName.length > 0 ? "error" : null}
-                placeholder="First Name"
-                type="text"
-                name="firstName"
-                noValidate
-                onChange={this.handleChange}
-              />
-              {formErrors.firstName.length > 0 && (
-                <span className="errorMessage">{formErrors.firstName}</span>
-              )}
-            </div>
-            <div className="lastName">
-              <label htmlFor="lastName">Last Name</label>
-              <input
-                className={formErrors.lastName.length > 0 ? "error" : null}
-                placeholder="Last Name"
-                type="text"
-                name="lastName"
-                noValidate
-                onChange={this.handleChange}
-              />
-              {formErrors.lastName.length > 0 && (
-                <span className="errorMessage">{formErrors.lastName}</span>
-              )}
-            </div>
             <div className="email">
               <label htmlFor="email">Email</label>
               <input
@@ -151,7 +124,7 @@ class Login extends Component {
             </div>
             <div className="createAccount">
               <button type="submit">Submit</button>
-              <small>Already Have an Account?</small>
+              <Link to="/register">Back</Link>
             </div>
           </form>
         </div>
