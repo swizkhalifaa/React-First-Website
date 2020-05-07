@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "../App.css";
 import { Link } from "react-router-dom";
+import fire from "../config/Fire";
 
 const emailRegex = RegExp(
   /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
@@ -44,7 +45,17 @@ class Register extends Component {
     e.preventDefault();
 
     if (formValid(this.state)) {
-      console.log(`
+      fire
+        .auth()
+        .createUserWithEmailAndPassword(this.state.email, this.state.password)
+        .then((u) => {})
+        .then((u) => {
+          console.log(u);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      alert(`
             --SUBMITTING--
             First Name: ${this.state.firstName}
             Last Name: ${this.state.lastName}
@@ -52,7 +63,7 @@ class Register extends Component {
             Password: ${this.state.password}
           `);
     } else {
-      console.error("FORM INVALID - DISPLAY ERROR MESSAGE");
+      alert("Invalid Form");
     }
   };
 

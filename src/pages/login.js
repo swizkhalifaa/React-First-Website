@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "../App.css";
 import { Link } from "react-router-dom";
+import fire from "../config/Fire";
 
 const emailRegex = RegExp(
   /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
@@ -27,13 +28,9 @@ class Login extends Component {
     super(props);
 
     this.state = {
-      firstName: null,
-      lastName: null,
       email: null,
       password: null,
       formErrors: {
-        firstName: "",
-        lastName: "",
         email: "",
         password: "",
       },
@@ -44,32 +41,29 @@ class Login extends Component {
     e.preventDefault();
 
     if (formValid(this.state)) {
-      console.log(`
+      fire
+        .auth()
+        .signInWithEmailAndPassword(this.state.email, this.state.password)
+        .then((u) => {})
+        .catch((error) => {
+          console.log(error);
+        });
+      alert(`
             --SUBMITTING--
-            First Name: ${this.state.firstName}
-            Last Name: ${this.state.lastName}
             Email: ${this.state.email}
             Password: ${this.state.password}
           `);
     } else {
-      console.error("FORM INVALID - DISPLAY ERROR MESSAGE");
+      alert("Invalid Form");
     }
   };
 
-  handleChange = (e) => {
-    e.preventDefault();
-    const { name, value } = e.target;
+  handleChange = (event) => {
+    event.preventDefault();
+    const { name, value } = event.target;
     let formErrors = { ...this.state.formErrors };
 
     switch (name) {
-      case "firstName":
-        formErrors.firstName =
-          value.length < 3 ? "minimum 3 characaters required" : "";
-        break;
-      case "lastName":
-        formErrors.lastName =
-          value.length < 3 ? "minimum 3 characaters required" : "";
-        break;
       case "email":
         formErrors.email = emailRegex.test(value)
           ? ""
@@ -123,7 +117,7 @@ class Login extends Component {
               )}
             </div>
             <div className="createAccount">
-              <button type="submit">Submit</button>
+              <button type="submit">Enter</button>
               <Link to="/register">Back</Link>
             </div>
           </form>
