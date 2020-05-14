@@ -1,130 +1,57 @@
-import React, { Component } from "react";
-import "../App.css";
+import React, { useCallback, useContext, useState } from "react";
+import { withRouter, Redirect } from "react-router";
 import { Link } from "react-router-dom";
-import fire from "../config/Fire";
+import app from "../services/Fire";
+import { AuthContext } from "../services/Auth.js";
 
-const emailRegex = RegExp(
-  /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
-);
+import "../App.css";
 
-const formValid = ({ formErrors, ...rest }) => {
-  let valid = true;
+const Login = ({ history }) => {
+  const [errorMessage, setErrorMessage] = useState(null);
+  const handleLogin = useCallback(
+    async (event) => {
+      event.preventDefault();
+      const { email, password } = event.target.elements;
+      try {
+        await app
+          .auth()
+          .signInWithEmailAndPassword(email.value, password.value);
+        history.push("/");
+      } catch (error) {
+        setErrorMessage(error.message);
+      }
+    },
+    [history]
+  );
 
-  // validate form errors being empty
-  Object.values(formErrors).forEach((val) => {
-    val.length > 0 && (valid = false);
-  });
+  const { currentUser } = useContext(AuthContext);
 
-  // validate the form was filled out
-  Object.values(rest).forEach((val) => {
-    val === null && (valid = false);
-  });
+  if (currentUser) {
+    return <Redirect to="/" />;
+  }
 
-  return valid;
+  return (
+    <div className="wrapper">
+      <div className="form-wrapper">
+        <h1>Login</h1>
+        <form onSubmit={handleLogin}>
+          <div className="email">
+            <label htmlFor="email">Email</label>
+            <input name="email" type="email" placeholder="Email" />
+          </div>
+          <div className="password">
+            <label htmlFor="password">Password</label>
+            <input name="password" type="password" placeholder="Password" />
+          </div>
+          <div className="createAccount">
+          <div className="errorMessage">{errorMessage}</div>
+            <button type="submit">Submit</button>
+            <Link to="/register">Dont Have an Account?</Link>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 };
 
-class Login extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      email: null,
-      password: null,
-      formErrors: {
-        email: "",
-        password: "",
-      },
-    };
-  }
-
-  handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (formValid(this.state)) {
-      fire
-        .auth()
-        .signInWithEmailAndPassword(this.state.email, this.state.password)
-        .then((u) => {})
-        .catch((error) => {
-          console.log(error);
-        });
-      alert(`
-            --SUBMITTING--
-            Email: ${this.state.email}
-            Password: ${this.state.password}
-          `);
-    } else {
-      alert("Invalid Form");
-    }
-  };
-
-  handleChange = (event) => {
-    event.preventDefault();
-    const { name, value } = event.target;
-    let formErrors = { ...this.state.formErrors };
-
-    switch (name) {
-      case "email":
-        formErrors.email = emailRegex.test(value)
-          ? ""
-          : "invalid email address";
-        break;
-      case "password":
-        formErrors.password =
-          value.length < 6 ? "minimum 6 characaters required" : "";
-        break;
-      default:
-        break;
-    }
-
-    this.setState({ formErrors, [name]: value }, () => console.log(this.state));
-  };
-
-  render() {
-    const { formErrors } = this.state;
-
-    return (
-      <div className="wrapper">
-        <div className="form-wrapper">
-          <h1>Login</h1>
-          <form onSubmit={this.handleSubmit} noValidate>
-            <div className="email">
-              <label htmlFor="email">Email</label>
-              <input
-                className={formErrors.email.length > 0 ? "error" : null}
-                placeholder="Email"
-                type="email"
-                name="email"
-                noValidate
-                onChange={this.handleChange}
-              />
-              {formErrors.email.length > 0 && (
-                <span className="errorMessage">{formErrors.email}</span>
-              )}
-            </div>
-            <div className="password">
-              <label htmlFor="password">Password</label>
-              <input
-                className={formErrors.password.length > 0 ? "error" : null}
-                placeholder="Password"
-                type="password"
-                name="password"
-                noValidate
-                onChange={this.handleChange}
-              />
-              {formErrors.password.length > 0 && (
-                <span className="errorMessage">{formErrors.password}</span>
-              )}
-            </div>
-            <div className="createAccount">
-              <button type="submit">Enter</button>
-              <Link to="/register">Back</Link>
-            </div>
-          </form>
-        </div>
-      </div>
-    );
-  }
-}
-
-export default Login;
+export default withRouter(Login);

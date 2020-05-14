@@ -1,175 +1,141 @@
-import React, { Component } from "react";
-import "../App.css";
+import React, { useCallback, useState, useEffect } from "react";
+import { withRouter } from "react-router";
 import { Link } from "react-router-dom";
-import fire from "../config/Fire";
+import app from "../services/Fire";
 
-const emailRegex = RegExp(
-  /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
-);
+import * as $ from "jquery";
+import Player from "../Player.js";
 
-const formValid = ({ formErrors, ...rest }) => {
-  let valid = true;
+import "../App.css";
 
-  // validate form errors being empty
-  Object.values(formErrors).forEach((val) => {
-    val.length > 0 && (valid = false);
-  });
+export const authEndpoint = "https://accounts.spotify.com/authorize/";
 
-  // validate the form was filled out
-  Object.values(rest).forEach((val) => {
-    val === null && (valid = false);
-  });
+const clientId = "f5cd8191488c48c98aa1bcbc801bb0a8";
+const redirectUri = "http://localhost:3000/";
+const scopes = ["user-read-currently-playing", "user-read-playback-state"];
 
-  return valid;
+// Get the hash of the url
+const hash = window.location.hash
+  .substring(1)
+  .split("&")
+  .reduce(function (initial, item) {
+    if (item) {
+      var parts = item.split("=");
+      initial[parts[0]] = decodeURIComponent(parts[1]);
+    }
+    return initial;
+  }, {});
+window.location.hash = "";
+
+
+
+
+const Register = ({ history }) => {
+  const [errorMessage, setErrorMessage] = useState(null);
+  const handleSignUp = useCallback(
+    async (event) => {
+      event.preventDefault();
+      const { firstname, lastname, email, password } = event.target.elements;
+      if (firstname.value.length < 3 || lastname.value.length < 3) {
+        setErrorMessage("First & last name over 2 characters");
+      } else {
+        try {
+          await app
+            .auth()
+            .createUserWithEmailAndPassword(email.value, password.value)
+            .then((userCredentials) => {
+              if (userCredentials.user) {
+                userCredentials.user
+                  .updateProfile({
+                    displayName: firstname.value + " " + lastname.value,
+                  })
+                  .then(() => {
+                    history.push("/");
+                  });
+              }
+            });
+        } catch (error) {
+          setErrorMessage(error.message);
+        }
+      }
+    },
+    [history]
+  );
+
+  const [token, setToken] = useState(null);
+  const [item, setItem] = useState({album: {images: [{ url: "" }] }, name: "", artists: [{ name: "" }], duration_ms:0 })
+  const [is_playing, setIs_playing] = useState("Paused");
+  const [progress_ms, setProgress_ms] = useState(0);
+
+  getCurrentlyPlaying = getCurrentlyPlaying.bind(this);
+
+  useEffect(() => {
+    // Set token
+    let _token = hash.access_token;
+    if (_token) {
+      // Set token
+      setToken(_token);
+      getCurrentlyPlaying(_token)
+    }
+  }, []);
+
+  function getCurrentlyPlaying(token) {
+    // Make a call using the token
+    $.ajax({
+      url: "https://api.spotify.com/v1/me/player",
+      type: "GET",
+      beforeSend: (xhr) => {
+        xhr.setRequestHeader("Authorization", "Bearer " + token);
+      },
+      success: (data) => {
+        setItem(data.item)
+        setIs_playing(data.is_playing)
+        setProgress_ms(data.progress_ms)
+      }
+    });
+  }
+
+  return (
+    <div className="wrapper">
+      <div className="form-wrapper">
+        <h1>Register</h1>
+        <form onSubmit={handleSignUp}>
+          <div className="firstName">
+            <label htmlFor="firstName">First Name</label>
+            <input name="firstname" type="text" placeholder="Firstname" />
+          </div>
+          <div className="lastName">
+            <label htmlFor="lastName">Last Name</label>
+            <input name="lastname" type="text" placeholder="Last name" />
+          </div>
+          <div className="email">
+            <label htmlFor="email">Email</label>
+            <input name="email" type="email" placeholder="Email" />
+          </div>
+          <div className="password">
+            <label htmlFor="password">Password</label>
+            <input name="password" type="password" placeholder="Password" />
+          </div>
+          <div className="createAccount">
+            <div className="errorMessage">{errorMessage}</div>
+            <button type="submit">Submit</button>
+            <Link to="/login">Login</Link>
+            <div>
+
+            {!token && (
+              <a href={`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
+                "%20"
+              )}&response_type=token&show_dialog=true`}>
+                Spotify
+              </a>
+            )}
+            {token && ( <Player item={item} is_playing={is_playing} progress_ms={progress_ms} />)}
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 };
 
-class Register extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      firstName: null,
-      lastName: null,
-      email: null,
-      password: null,
-      formErrors: {
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-      },
-    };
-  }
-
-  handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (formValid(this.state)) {
-      fire
-        .auth()
-        .createUserWithEmailAndPassword(this.state.email, this.state.password)
-        .then((u) => {})
-        .then((u) => {
-          console.log(u);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-      alert(`
-            --SUBMITTING--
-            First Name: ${this.state.firstName}
-            Last Name: ${this.state.lastName}
-            Email: ${this.state.email}
-            Password: ${this.state.password}
-          `);
-    } else {
-      alert("Invalid Form");
-    }
-  };
-
-  handleChange = (e) => {
-    e.preventDefault();
-    const { name, value } = e.target;
-    let formErrors = { ...this.state.formErrors };
-
-    switch (name) {
-      case "firstName":
-        formErrors.firstName =
-          value.length < 3 ? "minimum 3 characaters required" : "";
-        break;
-      case "lastName":
-        formErrors.lastName =
-          value.length < 3 ? "minimum 3 characaters required" : "";
-        break;
-      case "email":
-        formErrors.email = emailRegex.test(value)
-          ? ""
-          : "invalid email address";
-        break;
-      case "password":
-        formErrors.password =
-          value.length < 6 ? "minimum 6 characaters required" : "";
-        break;
-      default:
-        break;
-    }
-
-    this.setState({ formErrors, [name]: value }, () => console.log(this.state));
-  };
-
-  render() {
-    const { formErrors } = this.state;
-
-    return (
-      <div className="wrapper">
-        <div className="form-wrapper">
-          <h1>Sign Up</h1>
-          <form onSubmit={this.handleSubmit} noValidate>
-            <div className="firstName">
-              <label htmlFor="firstName">First Name</label>
-              <input
-                className={formErrors.firstName.length > 0 ? "error" : null}
-                placeholder="First Name"
-                type="text"
-                name="firstName"
-                noValidate
-                onChange={this.handleChange}
-              />
-              {formErrors.firstName.length > 0 && (
-                <span className="errorMessage">{formErrors.firstName}</span>
-              )}
-            </div>
-            <div className="lastName">
-              <label htmlFor="lastName">Last Name</label>
-              <input
-                className={formErrors.lastName.length > 0 ? "error" : null}
-                placeholder="Last Name"
-                type="text"
-                name="lastName"
-                noValidate
-                onChange={this.handleChange}
-              />
-              {formErrors.lastName.length > 0 && (
-                <span className="errorMessage">{formErrors.lastName}</span>
-              )}
-            </div>
-            <div className="email">
-              <label htmlFor="email">Email</label>
-              <input
-                className={formErrors.email.length > 0 ? "error" : null}
-                placeholder="Email"
-                type="email"
-                name="email"
-                noValidate
-                onChange={this.handleChange}
-              />
-              {formErrors.email.length > 0 && (
-                <span className="errorMessage">{formErrors.email}</span>
-              )}
-            </div>
-            <div className="password">
-              <label htmlFor="password">Password</label>
-              <input
-                className={formErrors.password.length > 0 ? "error" : null}
-                placeholder="Password"
-                type="password"
-                name="password"
-                noValidate
-                onChange={this.handleChange}
-              />
-              {formErrors.password.length > 0 && (
-                <span className="errorMessage">{formErrors.password}</span>
-              )}
-            </div>
-            <div className="createAccount">
-              <button type="submit">Submit</button>
-              <Link to="/login">Already Have an Account?</Link>
-            </div>
-          </form>
-        </div>
-      </div>
-    );
-  }
-}
-
-export default Register;
+export default withRouter(Register);

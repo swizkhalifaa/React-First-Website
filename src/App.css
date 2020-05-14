@@ -30,7 +30,7 @@ h1 {
   color: #111;
   font-size: 49px;
   font-weight: 900;
-  letter-spacing: -3px;
+  letter-spacing: -1px;
   font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
 }
 
@@ -61,7 +61,8 @@ input.error {
 
 .errorMessage {
   color: red;
-  font-size: 0.75em;
+  font-weight: bold;
+  font-size: 1em;
   display: relative;
 }
 
