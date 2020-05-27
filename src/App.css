@@ -102,6 +102,7 @@ input.error {
 
 .createAccount button {
   background-color: #1db954;
+  text-transform: none;
   color: #fff;
   border-radius: 10px;
   border: 2px solid #fff;

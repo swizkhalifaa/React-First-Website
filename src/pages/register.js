@@ -1,34 +1,20 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState } from "react";
 import { withRouter } from "react-router";
 import { Link } from "react-router-dom";
 import app from "../services/Fire";
 
-import * as $ from "jquery";
-import Player from "../Player.js";
-
+import Button from "@material-ui/core/Button";
 import "../App.css";
 
-export const authEndpoint = "https://accounts.spotify.com/authorize/";
-
+export const authEndpoint = "https://accounts.spotify.com/authorize";
 const clientId = "f5cd8191488c48c98aa1bcbc801bb0a8";
 const redirectUri = "http://localhost:3000/";
-const scopes = ["user-read-currently-playing", "user-read-playback-state"];
-
-// Get the hash of the url
-const hash = window.location.hash
-  .substring(1)
-  .split("&")
-  .reduce(function (initial, item) {
-    if (item) {
-      var parts = item.split("=");
-      initial[parts[0]] = decodeURIComponent(parts[1]);
-    }
-    return initial;
-  }, {});
-window.location.hash = "";
-
-
-
+const scopes = [
+  "user-read-currently-playing",
+  "user-read-playback-state",
+  "playlist-read-collaborative",
+  "playlist-read-private",
+];
 
 const Register = ({ history }) => {
   const [errorMessage, setErrorMessage] = useState(null);
@@ -49,9 +35,9 @@ const Register = ({ history }) => {
                   .updateProfile({
                     displayName: firstname.value + " " + lastname.value,
                   })
-                  .then(() => {
-                    history.push("/");
-                  });
+                    window.location.href = `${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
+                      "%20"
+                    )}&response_type=token&show_dialog=true`;
               }
             });
         } catch (error) {
@@ -61,39 +47,6 @@ const Register = ({ history }) => {
     },
     [history]
   );
-
-  const [token, setToken] = useState(null);
-  const [item, setItem] = useState({album: {images: [{ url: "" }] }, name: "", artists: [{ name: "" }], duration_ms:0 })
-  const [is_playing, setIs_playing] = useState("Paused");
-  const [progress_ms, setProgress_ms] = useState(0);
-
-  getCurrentlyPlaying = getCurrentlyPlaying.bind(this);
-
-  useEffect(() => {
-    // Set token
-    let _token = hash.access_token;
-    if (_token) {
-      // Set token
-      setToken(_token);
-      getCurrentlyPlaying(_token)
-    }
-  }, []);
-
-  function getCurrentlyPlaying(token) {
-    // Make a call using the token
-    $.ajax({
-      url: "https://api.spotify.com/v1/me/player",
-      type: "GET",
-      beforeSend: (xhr) => {
-        xhr.setRequestHeader("Authorization", "Bearer " + token);
-      },
-      success: (data) => {
-        setItem(data.item)
-        setIs_playing(data.is_playing)
-        setProgress_ms(data.progress_ms)
-      }
-    });
-  }
 
   return (
     <div className="wrapper">
@@ -118,19 +71,8 @@ const Register = ({ history }) => {
           </div>
           <div className="createAccount">
             <div className="errorMessage">{errorMessage}</div>
-            <button type="submit">Submit</button>
+            <Button type="submit">Submit</Button>
             <Link to="/login">Login</Link>
-            <div>
-
-            {!token && (
-              <a href={`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
-                "%20"
-              )}&response_type=token&show_dialog=true`}>
-                Spotify
-              </a>
-            )}
-            {token && ( <Player item={item} is_playing={is_playing} progress_ms={progress_ms} />)}
-            </div>
           </div>
         </form>
       </div>
