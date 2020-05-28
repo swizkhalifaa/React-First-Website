@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import app from "../services/Fire";
+import fire from "../services/Fire";
 import Player from "../Player";
 
 import * as $ from "jquery";
@@ -23,6 +23,12 @@ const Home = () => {
   const [is_playing, setIs_playing] = useState("Paused");
   const [progress_ms, setProgress_ms] = useState(0);
   const [token, setToken] = useState(null);
+  const [UID, setUID] = useState(null);
+  const [username, setUsername] = useState(null);
+  const [spotifyID, setSpotifyID] = useState(null);
+  const [image, setImage] = useState(null);
+  const [registered, setRegistered] = useState(false);
+  
 
   const [item, setItem] = useState({
     album: { images: [{ url: "" }] },
@@ -30,17 +36,33 @@ const Home = () => {
     artists: [{ name: "" }],
     duration_ms: 0,
   });
-  
 
+  const user = {
+    UID : "UID",
+    username : "username",
+    spotifyID : "spotifyID",
+    image: "image"
+};
+
+  var userRef = fire.database().ref().child(`users/${fire.auth().currentUser.uid}`) 
+  
   useEffect(() => {
     // Set token
-    let _token = hash.access_token;
-    
+    let _token = hash.access_token
+
     if(!localStorage.getItem('token')){
       if (_token) {
         localStorage.setItem('token', _token);
-        setToken(_token);
+        setToken(_token)
         getCurrentlyPlaying(_token);
+
+        if(!registered){
+          getSpotifyUser(token)
+          setUID(fire.auth().currentUser.uid)
+          setUsername(fire.auth().currentUser.displayName)
+          userRef.set(user)
+          setRegistered(true)
+        }
       }
     }
     else{
@@ -48,6 +70,24 @@ const Home = () => {
       getCurrentlyPlaying(localStorage.getItem('token'))
     }
   }, []);
+
+  function getSpotifyUser(token) {
+    // Make a call using the token
+    $.ajax({
+      url: "https://api.spotify.com/v1/me",
+      type: "GET",
+      beforeSend: (xhr) => {
+        xhr.setRequestHeader("Authorization", "Bearer " + token);
+      },
+      success: (data) => {
+        if (!data) {
+          return;
+        }
+        setSpotifyID(data.id)
+        setImage(data.images)
+      },
+    });
+  }
 
   function getCurrentlyPlaying(token) {
     // Make a call using the token
@@ -106,8 +146,8 @@ const Home = () => {
 
   return (
     <>
-      <h1>{app.auth().currentUser.displayName}</h1>
-      <Button onClick={() => app.auth().signOut()}>Sign out</Button>
+      <h1>{fire.auth().currentUser.displayName}</h1>
+      <Button onClick={() => fire.auth().signOut()}>Sign out</Button>
       <Button onClick={() =>getUserPlaylists(token)}>Playlists</Button>
       {token && (
                 <Player
