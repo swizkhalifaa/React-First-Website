@@ -45,7 +45,7 @@ const Register = ({ history }) => {
         }
       }
     },
-    [history]
+    []
   );
 
   return (
