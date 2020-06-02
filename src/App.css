@@ -139,15 +139,5 @@ a:hover {
   cursor: pointer;
 }
 
-.profile__img {
-  float: left;
-  margin-right: 10px;
-  margin-left: 10px;
-  text-align: right;
-  height: 45%;
-}
-.profile__img img {
-  height: 100px;
-  width: 100px;
-  border-radius: 50%;
-}
+
+
