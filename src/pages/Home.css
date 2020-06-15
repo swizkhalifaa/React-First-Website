@@ -4,7 +4,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: #5f4bb6;
+    background-color: #54428E;
   }
 .loading_screen {
     height: 100vh;
@@ -13,5 +13,6 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: #5f4bb6;
+    background-color: #54428E;
   }
+

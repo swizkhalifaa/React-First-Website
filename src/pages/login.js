@@ -10,7 +10,12 @@ import "../App.css";
 export const authEndpoint = "https://accounts.spotify.com/authorize";
 const clientId = "f5cd8191488c48c98aa1bcbc801bb0a8";
 const redirectUri = "http://localhost:3000/";
-const scopes = ["user-read-currently-playing", "user-read-playback-state", "playlist-read-collaborative", "playlist-read-private"];
+const scopes = 
+["user-read-currently-playing", 
+"user-read-playback-state", 
+"playlist-read-collaborative", 
+"playlist-read-private",
+"user-top-read"];
 
 const Login = ({ history }) => {
   const [errorMessage, setErrorMessage] = useState(null);
@@ -61,7 +66,7 @@ const Login = ({ history }) => {
           <div className="createAccount">
           <div className="errorMessage">{errorMessage}</div>
             <Button type="submit">Submit</Button>
-            <Link to="/register">Dont Have an Account?</Link>
+            <Link to="/Register">Dont Have an Account?</Link>
           </div>
         </form>
       </div>

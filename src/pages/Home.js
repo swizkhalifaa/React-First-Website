@@ -1,84 +1,49 @@
 import React, { useState, useEffect } from "react";
 import fire from "../services/Fire";
-import Player from "../Player";
+import Player from "../components/Player";
+import TemporaryDrawer from "../components/Drawer";
+import TabPanel from "../TabPanel";
+import a11yProps from "../TabPanel";
 import "./Home.css";
 import * as $ from "jquery";
-import PropTypes from 'prop-types';
+import styles from "../tweaks/Styles"
 
-import { ThemeProvider } from '@material-ui/styles';
-import { createMuiTheme } from '@material-ui/core/styles';
-import Avatar from '@material-ui/core/Avatar';
+import { ThemeProvider } from "@material-ui/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Button from "@material-ui/core/Button";
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+import AppBar from "@material-ui/core/AppBar";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
+import Typography from "@material-ui/core/Typography";
+import Toolbar from "@material-ui/core/Toolbar";
+import IconButton from "@material-ui/core/IconButton";
+import theme from "../tweaks/Theme";
 
-const styles = {
-  largeIcon: {
-    width: 150,
-    height: 150,
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
   },
-};
-
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      // light: will be calculated from palette.primary.main,
-      main: '#1db954',
-      // dark: will be calculated from palette.primary.main,
-      // contrastText: will be calculated to contrast with palette.primary.main
-    },
-    secondary: {
-      light: '#0066ff',
-      main: '#0044ff',
-      // dark: will be calculated from palette.secondary.main,
-      contrastText: '#ffcc00',
-    },
-    // Used by `getContrastText()` to maximize the contrast between
-    // the background and the text.
-    contrastThreshold: 3,
-    // Used by the functions below to shift a color's luminance by approximately
-    // two indexes within its tonal palette.
-    // E.g., shift from Red 500 to Red 300 or Red 700.
-    tonalOffset: 0.2,
+  menuButton: {
+    marginRight: theme.spacing(2),
+    minHeight: 70,
   },
-});
 
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
+  title: {
+    flexGrow: 1,
+    fontFamily: "Century Gothic",
+    fontSize: 22,
+    fontWeight: "bold",
+  },
+  drawer: {
+    height: 10,
+    width: 10,
+  },
+  tabBar: {
+    margin: "0 auto",
+  },
+}));
 
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired,
-};
-
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  };
-}
 // Get the hash of the url
 const hash = window.location.hash
   .substring(1)
@@ -92,17 +57,12 @@ const hash = window.location.hash
   }, {});
 window.location.hash = "";
 
-
-
-
-
 const Home = () => {
   const [is_playing, setIs_playing] = useState("Paused");
   const [progress_ms, setProgress_ms] = useState(0);
   const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
 
-  
   var UID = fire.auth().currentUser.uid;
 
   const [item, setItem] = useState({
@@ -182,7 +142,6 @@ const Home = () => {
           spotifyID: data.id,
           imageURL: data.images[0].url,
         });
-
         userRef.set(tempUser);
       },
     });
@@ -207,82 +166,100 @@ const Home = () => {
     });
   }
 
-  function getMyPlaylists(token) {
-    // Make a call using the token
-    $.ajax({
-      url: "https://api.spotify.com/v1/me/playlists",
-      type: "GET",
-      beforeSend: (xhr) => {
-        xhr.setRequestHeader("Authorization", "Bearer " + token);
-      },
-      success: (data) => {
-        if (!data) {
-          alert("no data");
-          return;
-        }
-        alert(data.items[0].name);
-      },
-    });
-  }
-
-  function getUserPlaylists(token) {
-    // Make a call using the token
-    $.ajax({
-      url: "https://api.spotify.com/v1/users/vitesku2000/playlists",
-      type: "GET",
-      beforeSend: (xhr) => {
-        xhr.setRequestHeader("Authorization", "Bearer " + token);
-      },
-      success: (data) => {
-        if (!data) {
-          alert("no data");
-          return;
-        }
-        alert(data.items[0].owner.display_name);
-      },
-    });
-  }
+  const classes = useStyles();
   const [value, setValue] = React.useState(0);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
   if (token && user) {
     return (
       <>
-      <ThemeProvider theme={theme}>
-        <h1>{user.username}</h1>
-        <div className="home-wrapper">
-        <AppBar position="static">
-        <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
-          <Tab label="Profile" {...a11yProps(0)} />
-          <Tab label="Playing" {...a11yProps(1)} />
-          <Tab label="Item Tree" {...a11yProps(2)} />
-          <Button onClick={() => fire.auth().signOut()} >Sign out</Button>
-        </Tabs>
-      </AppBar>
-      <TabPanel value={value} index={0}>
-      <Avatar alt="User Profile Image" src={user.imageURL} style={styles.largeIcon}/>          
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-      <Player
-            item={item}
-            is_playing={is_playing}
-            progress_ms={progress_ms}
-          />
-      </TabPanel>
-      <TabPanel value={value} index={2}>
-        Item Three
-      </TabPanel> 
-      </div>
-      </ThemeProvider>
+        <ThemeProvider theme={theme}>
+          <h1>{user.username}</h1>
+          <div className="home-wrapper">
+            <AppBar position="static">
+              <Toolbar>
+                <div>
+                  <IconButton
+                    className={classes.drawer}
+                    color="inherit"
+                    aria-label="open drawer"
+                  >
+                    <TemporaryDrawer />
+                  </IconButton>
+                </div>
+                <div className={classes.tabBar}>
+                  <Tabs
+                    value={value}
+                    onChange={handleChange}
+                    aria-label="tabs example"
+                  >
+                    <Tab
+                      className={classes.menuButton}
+                      label={
+                        <Typography className={classes.title}>
+                          social feed
+                        </Typography>
+                      }
+                      {...a11yProps(0)}
+                    />
+                    <Tab
+                      className={classes.menuButton}
+                      label={
+                        <Typography className={classes.title}>
+                          playlist center
+                        </Typography>
+                      }
+                      {...a11yProps(1)}
+                    />
+                    <Tab
+                      className={classes.menuButton}
+                      label={
+                        <Typography className={classes.title}>
+                          connect
+                        </Typography>
+                      }
+                      {...a11yProps(2)}
+                    />
+                    <Tab
+                      className={classes.menuButton}
+                      label={
+                        <Typography className={classes.title}>
+                          messages
+                        </Typography>
+                      }
+                      {...a11yProps(3)}
+                    />
+                  </Tabs>
+                </div>
+              </Toolbar>
+            </AppBar>
+            <TabPanel value={value} index={0}>
+              testest
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+              <Player
+                item={item}
+                is_playing={is_playing}
+                progress_ms={progress_ms}
+              />
+            </TabPanel>
+            <TabPanel value={value} index={2}>
+              etstetste
+            </TabPanel>
+            <TabPanel value={value} index={3}>
+              idk idk
+            </TabPanel>
+          </div>
+        </ThemeProvider>
       </>
     );
   } else {
     return (
-      <>    
+      <>
         <div className="loading_screen">
           <CircularProgress pb={8} color="secondary" style={styles.largeIcon} />
-          <h1>Patience</h1>
         </div>
       </>
     );
@@ -327,4 +304,40 @@ export default Home;
 //   if (!results) return null;
 //   if (!results[2]) return "";
 //   return decodeURIComponent(results[2].replace(/\+/g, " "));
+// }
+
+// function getMyPlaylists(token) {
+//   // Make a call using the token
+//   $.ajax({
+//     url: "https://api.spotify.com/v1/me/playlists",
+//     type: "GET",
+//     beforeSend: (xhr) => {
+//       xhr.setRequestHeader("Authorization", "Bearer " + token);
+//     },
+//     success: (data) => {
+//       if (!data) {
+//         alert("no data");
+//         return;
+//       }
+//       alert(data.items[0].name);
+//     },
+//   });
+// }
+
+// function getUserPlaylists(token) {
+//   // Make a call using the token
+//   $.ajax({
+//     url: "https://api.spotify.com/v1/users/vitesku2000/playlists",
+//     type: "GET",
+//     beforeSend: (xhr) => {
+//       xhr.setRequestHeader("Authorization", "Bearer " + token);
+//     },
+//     success: (data) => {
+//       if (!data) {
+//         alert("no data");
+//         return;
+//       }
+//       alert(data.items[0].owner.display_name);
+//     },
+//   });
 // }

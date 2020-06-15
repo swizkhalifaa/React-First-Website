@@ -56,7 +56,7 @@ const Register = ({ history }) => {
           <div className="createAccount">
             <div className="errorMessage">{errorMessage}</div>
             <Button type="submit">Submit</Button>
-            <Link to="/login">Login</Link>
+            <Link to="/Login">Login</Link>
           </div>
         </form>
       </div>
