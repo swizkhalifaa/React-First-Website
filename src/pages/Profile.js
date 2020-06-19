@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Playlist from "../components/Playlist";
+import Artist from "../components/Artist";
+import Song from "../components/Song";
 import fire from "../services/Fire";
 import * as $ from "jquery";
-import styles from "../tweaks/Styles"
+import styles from "../tweaks/Styles";
 
 import Avatar from "@material-ui/core/Avatar";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -16,13 +18,14 @@ import TemporaryDrawer from "../components/Drawer";
 import Typography from "@material-ui/core/Typography";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-
-
+import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import Divider from "@material-ui/core/Divider";
 
 const useStyles = makeStyles({
   avatar: {
-    width: 300,
-    height: 300,
+    width: 250,
+    height: 250,
     borderStyle: "solid",
     borderWidth: 20,
     color: "#1db954",
@@ -37,7 +40,7 @@ const useStyles = makeStyles({
     height: 40,
   },
   topDiv: {
-    height: 300,
+    height: 200,
     position: "relative",
   },
   topName: {
@@ -45,18 +48,16 @@ const useStyles = makeStyles({
     position: "absolute",
     bottom: 0,
   },
-  topMusicDiv: {
-    paddingRight: 30,
-    position: "absolute",
-    right: 0,
-    top: 0,
+  topMusicDiv:{
+
   },
-  topMusic: {
-    right: 0,
-    bottom: 0,
+  topArtistDiv: {
+    margin: 30,
+    float: 'left'
   },
-  tabButton: {
-    left: 0,
+  topTrackDiv: {
+    margin: 30,
+    float: 'right'
   },
   musictext: {
     flexGrow: 1,
@@ -65,19 +66,60 @@ const useStyles = makeStyles({
     fontSize: 35,
     fontWeight: "bold",
   },
-  playlistSection: {
-    borderRightWidth: 0,
-    display: 'flex',
-    flexDirection: 'row',
-    paddingTop: 140,
+  playlistList: {
+    width: "80%",
+    margin: "0 auto",
+    overflowX: "hidden",
+    display: "flex",
+    flexDirection: "row",
+    scrollBehavior: "smooth",
   },
-  playlistObject: {
-    '&:hover': {
-    
-      background: "#f00",
-      cursor: 'pointer'
+  profileTitles: {
+    marginLeft: 20,
+    marginRight: 20,
+    flexGrow: 1,
+    fontFamily: "Century Gothic",
+    fontSize: 45,
+    fontWeight: "bold",
+    color: "#ffffff",
+  },
+  playlistTitleDiv: {
+    marginLeft: 30,
+    marginRight: 30,
+    marginTop: 500,
+  },
+  navigationArrows: {
+    color: "#adb5bd",
+    "&:hover": {
+      color: "#FF1654",
+      cursor: "pointer",
     },
-  }
+  },
+  playlistDiv: {
+    padding: 10,
+    display: "flex",
+    placeContent: 'center'
+  },
+  divider: {
+    backgroundColor: "#FF1654",
+  },
+  emptyPlaylist: {
+    flexGrow: 1,
+    fontFamily: "Century Gothic",
+    fontSize: 80,
+    fontWeight: "bold",
+    color: "#3c096c",
+    paddingTop: 60
+  },
+  emptyTopMusic: {
+    flexGrow: 1,
+    fontFamily: "Century Gothic",
+    fontSize: 40,
+    fontWeight: "bold",
+    color: "#3c096c",
+    paddingTop: 20,
+    paddingLeft: 20
+  },
 });
 
 const Profile = () => {
@@ -87,6 +129,12 @@ const Profile = () => {
   const [user, setUser] = useState(null);
   const [userPlaylists, setUserPlaylists] = useState([]);
   const classes = useStyles();
+
+  const scroll = (direction) => {
+    let far = $(".playlist-object").width() * 6.8 * direction;
+    let pos = $(".playlist-container").scrollLeft() + far;
+    $(".playlist-container").animate({ scrollLeft: pos }, 55);
+  };
 
   var userRef = fire
     .database()
@@ -105,19 +153,18 @@ const Profile = () => {
       if (token == null) {
         setToken(localStorage.getItem("token"));
         getTopMusic(localStorage.getItem("token"));
-        getMyPlaylists(localStorage.getItem("token"), data)
+        getMyPlaylists(localStorage.getItem("token"), data);
       } else {
         getTopMusic(token);
         getMyPlaylists(token, data);
       }
     });
-    
   }, []);
 
   function getTopMusic(token) {
     // Make a call using the token
     $.ajax({
-      url: "https://api.spotify.com/v1/me/top/artists",
+      url: "https://api.spotify.com/v1/me/top/artists?time_range=short_term&limit=10",
       type: "GET",
       beforeSend: (xhr) => {
         xhr.setRequestHeader("Authorization", "Bearer " + token);
@@ -127,11 +174,13 @@ const Profile = () => {
           alert("fail");
           return;
         }
-        setTopArtist(data.items[0].name);
+        if (data.items[9]) {
+          setTopArtist(data.items[9]);
+        }
       },
     });
     $.ajax({
-      url: "https://api.spotify.com/v1/me/top/tracks",
+      url: "https://api.spotify.com/v1/me/top/tracks?time_range=short_term&limit=10",
       type: "GET",
       beforeSend: (xhr) => {
         xhr.setRequestHeader("Authorization", "Bearer " + token);
@@ -141,34 +190,39 @@ const Profile = () => {
           alert("fail");
           return;
         }
-        setTopTrack(data.items[0].name);
+        if (data.items[9]) {
+          setTopTrack(data.items[9]);
+        }
       },
     });
   }
 
   function getMyPlaylists(token, user) {
-  // Make a call using the token
-  $.ajax({
-    url: "https://api.spotify.com/v1/me/playlists?limit=50",
-    type: "GET",
-    beforeSend: (xhr) => {
-      xhr.setRequestHeader("Authorization", "Bearer " + token);
-    },
-    success: (data) => {
-      if (!data) {
-        alert("no data");
-        return;
-      }
-      data.items.forEach((item) => {
-        if(item.owner.id && item.owner.id === user.spotifyID){
-          setUserPlaylists(userPlaylists => userPlaylists.concat(item))
+    // Make a call using the token
+    $.ajax({
+      url: "https://api.spotify.com/v1/me/playlists?limit=50",
+      type: "GET",
+      beforeSend: (xhr) => {
+        xhr.setRequestHeader("Authorization", "Bearer " + token);
+      },
+      success: (data) => {
+        if (!data) {
+          alert("no data");
+          return;
         }
-      })     
-    },
-  });
-}
-
-  if (user && token && userPlaylists) {
+        data.items.forEach((item) => {
+          if (
+            item.images[0] &&
+            item.owner.id &&
+            item.owner.id === user.spotifyID
+          ) {
+            setUserPlaylists((userPlaylists) => userPlaylists.concat(item));
+          }
+        });
+      },
+    });
+  }
+  if (user && token) {
     return (
       <>
         <ThemeProvider theme={theme}>
@@ -176,25 +230,11 @@ const Profile = () => {
             <div className={classes.topName}>
               <h1>{user.username}</h1>
             </div>
-            <div className={classes.topMusicDiv}>
-              <div className={classes.topMusic}>
-                <Typography className={classes.musictext} color="secondary">
-                  Top Song: {topTrack}
-                </Typography>
-              </div>
-              <div className={classes.topMusic}>
-                <Typography className={classes.musictext} color="secondary">
-                  Top Artist: {topArtist}
-                </Typography>
-              </div>
-            </div>
           </div>
           <div className="home-wrapper">
             <AppBar position="static">
               <Toolbar className={classes.toolbar}>
-                <div className={classes.tabButton}>
-                  <TemporaryDrawer />
-                </div>
+                <TemporaryDrawer />
                 <Grid container justify="center" alignItems="center">
                   <Avatar
                     alt="User Profile Image"
@@ -204,13 +244,59 @@ const Profile = () => {
                 </Grid>
               </Toolbar>
             </AppBar>
-            <List className={classes.playlistSection}>
-            {userPlaylists.map((playlist) =>(
-              <ListItem className={classes.playlistObject}>
-              <Playlist item={playlist}/>
-              </ListItem>
-            ))}
-          </List>
+            <div className={classes.topMusicDiv}>
+            <div className={classes.topArtistDiv}>
+              <Typography className={classes.profileTitles}>
+                Top Artist
+              </Typography>
+                <Divider variant="middle" classes={{ root: classes.divider}} />
+                {topArtist ? <Artist artist={topArtist}/> : 
+                <div> 
+                <Typography className={classes.emptyTopMusic}>
+                None
+                </Typography>
+                </div>}
+              </div>
+              <div className={classes.topTrackDiv}>
+              <Typography className={classes.profileTitles}>
+                Top Song
+                </Typography>
+                <Divider variant="middle" classes={{ root: classes.divider}} />
+                {topTrack ? <Song song={topTrack}/> : 
+                <div> 
+                <Typography className={classes.emptyTopMusic}>
+                None
+                </Typography>
+                </div>}
+              </div>     
+            </div>
+            <div className={classes.playlistTitleDiv}>
+              <Typography className={classes.profileTitles}>
+                Playlists
+              </Typography>
+              <Divider variant="middle" classes={{ root: classes.divider}} />
+            </div>
+            <div className={classes.playlistDiv}>
+            {topTrack ? 
+            <>
+            <ChevronLeftIcon onClick={() => scroll(-1)} className={classes.navigationArrows} style={styles.largeIcon}/>
+              <List className={`${classes.playlistList} playlist-container`}>
+                {userPlaylists.map((playlist) => (
+                  <ListItem
+                    className={`${classes.playlistObject} playlist-object`}
+                  >
+                    <Playlist item={playlist} />
+                  </ListItem>
+                ))}
+              </List>
+              <ChevronRightIcon onClick={() => scroll(1)} className={classes.navigationArrows} style={styles.largeIcon}/> 
+              </>
+             : <div> 
+               <Typography className={classes.emptyPlaylist}>
+               No Playlists
+               </Typography>
+               </div>}
+            </div>
           </div>
         </ThemeProvider>
       </>

@@ -5,18 +5,25 @@ import theme from "../tweaks/Theme";
 import { ThemeProvider } from "@material-ui/styles";
 import { makeStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
+import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles({
   playlistBox: {
     backgroundColor: '#ffffff',
     height: 220,
     width: 220,
+    '&:hover': {
+      background: "#A3E7FC",
+      cursor: 'pointer'
+    },
   },
   playlistPic: {
     paddingTop: 15,
     textAlign: "center"
   },
   playlistNameText: {
+    marginLeft: 5,
+    marginRight: 5,
     textAlign: "center",
     flexGrow: 1,
     fontFamily: "Century Gothic",
@@ -25,6 +32,8 @@ const useStyles = makeStyles({
     fontWeight: "bold",
   },
   playlistAuthorText: {
+    marginLeft: 5,
+    marginRight: 5,
     textAlign: "center",
     flexGrow: 1,
     fontFamily: "Century Gothic",
@@ -35,21 +44,17 @@ const useStyles = makeStyles({
 
 const Playlist = (props) => {
   const classes = useStyles();
-  const backgroundStyles = {
-    backgroundImage: `url(${props.item.images[0].url})`,
-  };
 
   return (
     <ThemeProvider theme={theme}>
     <Box className={classes.playlistBox} borderRadius='10%'>
       <div className={classes.playlistPic}>
-        <img src={props.item.images[0].url} style={styles.largeIcon}/>
+        <img src={props.item.images[0].url} style={styles.musicItem} />
       </div>
       <div>
-        <div className={classes.playlistNameText}>{props.item.name}</div>
-        <div className={classes.playlistAuthorText}>by {props.item.owner.display_name}</div>
+        <Typography noWrap className={classes.playlistNameText}>{props.item.name}</Typography>
+        <Typography noWrap className={classes.playlistAuthorText}>by {props.item.owner.display_name}</Typography>
       </div>
-      <div style={backgroundStyles}/>{" "}
     </Box>
     </ThemeProvider>
   );
