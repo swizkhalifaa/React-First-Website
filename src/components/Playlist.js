@@ -10,8 +10,12 @@ import { Typography } from "@material-ui/core";
 const useStyles = makeStyles({
   playlistBox: {
     backgroundColor: '#ffffff',
-    height: 220,
-    width: 220,
+    height: 218,
+    width: 180,
+    borderStyle: "solid",
+    borderWidth: 6,
+    borderRadius: 15,
+    color: "#FF1654",
     '&:hover': {
       background: "#A3E7FC",
       cursor: 'pointer'
@@ -30,6 +34,7 @@ const useStyles = makeStyles({
     letterSpacing: -1,
     fontSize: 18,
     fontWeight: "bold",
+    color: '#111'
   },
   playlistAuthorText: {
     marginLeft: 5,
@@ -39,6 +44,7 @@ const useStyles = makeStyles({
     fontFamily: "Century Gothic",
     letterSpacing: -1,
     fontSize: 14,
+    color: '#111'
   },
   });
 

@@ -1,4 +1,3 @@
-
 const styles = {
   smallIcon: {
       width: 50,
@@ -17,11 +16,9 @@ const styles = {
     height: 150,
     borderRadius: 15 
   },
-  artistIcon: {
-    width: 300,
-    height: 300,
-    borderRadius: 15
-  }
+  musicIcon: {
+    width: '100%',
+  },
 };
 
 export default styles;

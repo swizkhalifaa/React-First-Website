@@ -13,7 +13,6 @@ const scopes = [
   "user-read-currently-playing",
   "user-read-playback-state",
   "playlist-read-collaborative",
-  "playlist-read-private",
 ];
 
 const Register = ({ history }) => {

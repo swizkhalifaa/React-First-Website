@@ -1,3 +1,5 @@
+
+
 .wrapper {
   height: 100vh;
   width: 100%;
@@ -42,22 +44,6 @@ label {
   font-weight: lighter;
 }
 
-input {
-  padding: 10px 10px;
-  border-radius: 5px;
-  outline: none;
-  border: 1px solid #cfcfcf;
-}
-
-input::placeholder {
-  font-size: 1.2em;
-  font-weight: lighter;
-  color: #999;
-}
-
-input.error {
-  border: 1px solid red;
-}
 
 .errorMessage {
   color: red;
@@ -129,6 +115,7 @@ input.error {
   letter-spacing: -0.5px;
   font-size: 13px;
 }
+
 
 
 

@@ -14,7 +14,6 @@ const scopes =
 ["user-read-currently-playing", 
 "user-read-playback-state", 
 "playlist-read-collaborative", 
-"playlist-read-private",
 "user-top-read"];
 
 const Login = ({ history }) => {

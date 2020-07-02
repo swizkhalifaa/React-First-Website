@@ -1,77 +1,65 @@
 import React from "react";
+import { makeStyles } from "@material-ui/core/styles";
 import fire from "../services/Fire";
 import { useHistory } from "react-router-dom";
 
-import clsx from "clsx";
-import { makeStyles } from "@material-ui/core/styles";
-import Drawer from "@material-ui/core/Drawer";
-import Button from "@material-ui/core/Button";
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import SettingsIcon from "@material-ui/icons/Settings";
-import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import MenuIcon from "@material-ui/icons/Menu";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import HomeIcon from "@material-ui/icons/Home";
 import Typography from "@material-ui/core/Typography";
-import { ThemeProvider } from "@material-ui/styles";
 import theme from "../tweaks/Theme";
+import Hidden from '@material-ui/core/Hidden';
+import QueueMusicIcon from '@material-ui/icons/QueueMusic';
+import NotificationsIcon from '@material-ui/icons/Notifications';
+import EmailIcon from '@material-ui/icons/Email';
 
 const useStyles = makeStyles({
-  list: {
-    width: 250,
-  },
-  fullList: {
-    width: "auto",
-  },
-  paper: {
-    backgroundColor: "#1db954",
-  },
-  drawerText: {
-    flexGrow: 1,
-    fontFamily: "Century Gothic",
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  drawerIcon: {
-    color: "#111",
-  },
-});
-
-export default function TemporaryDrawer() {
-  const history = useHistory();
-  const classes = useStyles();
-  const [state, setState] = React.useState({
-    left: false,
+    list:{
+      backgroundColor: '#54428E',
+      [theme.breakpoints.down('sm')]: {
+        
+      },
+      [theme.breakpoints.up('md')]: {
+        float:'left',
+      },
+      [theme.breakpoints.up('lg')]: {
+        float: 'left',
+      },
+    },
+    listItem: {      
+      paddingTop: '4%',
+      paddingBottom: '4%',
+        [theme.breakpoints.down('sm')]: {
+            height: 50,
+            width: 50
+          },
+    },
+    drawerText: {
+      color: "#FF1654",
+      flexGrow: 1,
+      fontFamily: "Century Gothic",
+      fontSize: 20,
+      fontWeight: "bold",
+      whiteSpace: 'nowrap'
+    },
+    drawerIcon: {
+      color: "#FF1654",
+    },
   });
 
-  const toggleDrawer = (anchor, open) => (event) => {
-    if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-
-    setState({ ...state, [anchor]: open });
-  };
-
-  const list = (anchor) => (
-    <div
-      className={clsx(classes.list, {
-        [classes.fullList]: anchor === "top" || anchor === "bottom",
-      })}
-      role="presentation"
-      onClick={toggleDrawer(anchor, false)}
-      onKeyDown={toggleDrawer(anchor, false)}
-    >
-      <List>
-        <ThemeProvider theme={theme}>
-          {["HOME", "PROFILE", "SETTINGS"].map((text, index) => (
+export default function DrawerLeft() {
+    const classes = useStyles();
+    const history = useHistory();
+    return (
+    <>
+        <List className={classes.list}>
+          {["HOME", "PROFILE", "PLAYLIST HUB", "NOTIFICATIONS", "MESSAGES"].map((text, index) => (
             <ListItem
+              className={classes.listItem}
               button
               key={text}
               onClick={() => {
@@ -85,54 +73,19 @@ export default function TemporaryDrawer() {
               <ListItemIcon className={classes.drawerIcon}>
                 {index === 0 && <HomeIcon />}
                 {index === 1 && <AccountCircleIcon />}
-                {index === 2 && <SettingsIcon />}
+                {index === 2 && <QueueMusicIcon />}
+                {index === 3 && <NotificationsIcon />}
+                {index === 4 && <EmailIcon />}
               </ListItemIcon>
+              <Hidden smDown>
               <ListItemText
                 primary={
                   <Typography className={classes.drawerText}>{text}</Typography>
                 }
               />
+              </Hidden>
             </ListItem>
           ))}
-        </ThemeProvider>
       </List>
-      <Divider />
-      <List>
-        <ThemeProvider theme={theme}>
-          {["SIGN OUT"].map((text, index) => (
-            <ListItem button onClick={() => fire.auth().signOut()}>
-              <ListItemIcon className={classes.drawerIcon}>
-                <ExitToAppIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary={
-                  <Typography className={classes.drawerText}>{text}</Typography>
-                }
-              />
-            </ListItem>
-          ))}
-        </ThemeProvider>
-      </List>
-    </div>
-  );
-
-  return (
-    <div>
-      {["left"].map((anchor) => (
-        <React.Fragment key={anchor}>
-          <Button onClick={toggleDrawer(anchor, true)}>
-            <MenuIcon />
-          </Button>
-          <Drawer
-            classes={{ paper: classes.paper }}
-            anchor={anchor}
-            open={state[anchor]}
-            onClose={toggleDrawer(anchor, false)}
-          >
-            {list(anchor)}
-          </Drawer>
-        </React.Fragment>
-      ))}
-    </div>
-  );
-}
+    </>
+    )}

@@ -4,62 +4,57 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles({
-  artistDiv: {
-    paddingTop: 20,
-    float: "right",
+  artistObjectDiv: {
+    backgroundColor: "#1db954",
+    color: "#111",
+    width: '60%',
+    borderStyle: "solid",
+    borderWidth: 1,
+    margin: '0 auto',
+    height: '60%',
   },
-  artistImage: {
-    paddingTop: 20,
-    paddingLeft: 20,
-    float: "left",
-    paddingRight: 40,
-  },
-  artistName: {
-    paddingTop: 100,
-  },
-  artistGenre: {
-    float: "right",
-  },
-  nameText: {
-    flexGrow: 1,
+  profileTitles: {
     fontFamily: "Century Gothic",
+    fontSize: 30,
+    fontWeight: "bold",
+    color: "#111",
     letterSpacing: -1,
-    fontSize: 35,
+  },
+  topMusicTitles: {
+    fontFamily: "Century Gothic",
+    fontSize: 22,
     fontWeight: "bold",
     color: "#ffffff",
-    marginRight: 20,
+    letterSpacing: -1,
+    textAlignLast: "center",
   },
-  genreText: {
-    flexGrow: 1,
+  topMusicTitlesSmall: {
     fontFamily: "Century Gothic",
-    fontSize: 18,
+    fontSize: 16,
     color: "#ffffff",
-    marginRight: 20,
   },
 });
 
 const Artist = (props) => {
   const classes = useStyles();
   return (
-    <>
+    <div className={classes.artistObjectDiv}>
+      {props.artist.images[0].url ? (
       <div className={classes.artistImage}>
-        <img src={props.artist.images[0].url} style={styles.artistIcon} />
+        <img src={props.artist.images[0].url} style={styles.musicIcon}/>
       </div>
-      <div className={classes.artistDiv}>
-        <div className={classes.artistName}>
-          <Typography className={classes.nameText}>
-            {props.artist.name}
+      ) : null}
+      {props.artist.name ? (
+      <Typography noWrap className={classes.topMusicTitles}>
+        {props.artist.name}
+      </Typography>
+      ) : null}
+      {props.artist.genres[0] ? (
+          <Typography noWrap className={classes.topMusicTitlesSmall}>
+            {props.artist.genres[0]}
           </Typography>
-        </div>
-        {props.artist.genres[0] ? (
-          <div className={classes.artistGenre}>
-            <Typography className={classes.genreText}>
-              {props.artist.genres[0]}
-            </Typography>
-          </div>
-        ) : null}
-      </div>
-    </>
+      ) : null}
+    </div>
   );
 };
 
