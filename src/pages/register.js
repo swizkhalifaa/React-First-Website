@@ -2,9 +2,9 @@ import React, { useCallback, useState } from "react";
 import { withRouter } from "react-router";
 import { Link } from "react-router-dom";
 import app from "../services/Fire";
+import useClasses from "../tweaks/Classes";
 
-import Button from "@material-ui/core/Button";
-import "../App.css";
+import Typography from "@material-ui/core/Typography";
 
 export const authEndpoint = "https://accounts.spotify.com/authorize";
 const clientId = "f5cd8191488c48c98aa1bcbc801bb0a8";
@@ -16,6 +16,7 @@ const scopes = [
 ];
 
 const Register = ({ history }) => {
+  const classes = useClasses();
   const [errorMessage, setErrorMessage] = useState(null);
   const handleSignUp = useCallback(
     async (event) => {
@@ -40,22 +41,38 @@ const Register = ({ history }) => {
   );
 
   return (
-    <div className="wrapper">
-      <div className="form-wrapper">
-        <h1>Register</h1>
+    <div className={classes.registerWrapper}>
+      <div className={classes.titleDiv}>
+        <Typography className={classes.titleText}>
+          Register
+        </Typography>
+        </div>
+      <div className={classes.formWrapper}>
         <form onSubmit={handleSignUp}>
-          <div className="email">
-            <label htmlFor="email">Email</label>
-            <input name="email" type="email" placeholder="Email" />
+          <div className={classes.emailPassword}>
+            <label htmlFor="email">
+              <Typography className={classes.label}>
+                Email
+              </Typography>
+              </label>
+            <input className={classes.input} name="email" type="email" placeholder="Email" />
           </div>
-          <div className="password">
-            <label htmlFor="password">Password</label>
-            <input name="password" type="password" placeholder="Password" />
+          <div className={classes.emailPassword}>
+            <label htmlFor="password">
+            <Typography className={classes.label}>
+              Password
+            </Typography>
+            </label>
+            <input className={classes.input} name="password" type="password" placeholder="Password" />
           </div>
-          <div className="createAccount">
-            <div className="errorMessage">{errorMessage}</div>
-            <Button type="submit">Submit</Button>
-            <Link to="/Login">Login</Link>
+          <div className={classes.createAccount}>
+            <div className={classes.errorMessage}>{errorMessage}</div>
+            <button className={classes.createAccountButton} type="submit">
+            <Typography className={classes.createAccountButtonText}>
+              Submit
+            </Typography> 
+            </button>
+            <Link className={classes.createAccountA} to="/Login">Login</Link>
           </div>
         </form>
       </div>

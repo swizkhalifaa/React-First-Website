@@ -40,24 +40,19 @@ const Home = () => {
   const classes = useClasses();
   const history = useHistory();
 
-  const scroll = (direction) => {
-    let far = $(".playlist-object").width() * 6.8 * direction;
-    let pos = $(".playlist-container").scrollLeft() + far;
-    $(".playlist-container").animate({ scrollLeft: pos }, 55);
-  };
-
   var UID = fire.auth().currentUser.uid;
-
   var userRef = fire
     .database()
     .ref()
     .child(`users/${fire.auth().currentUser.uid}`);
-
+  console.log(userRef.toString())
     useEffect(() => {
       // Set token
+      console.log(hash.token)
       let _token = hash.access_token;
-  
+      
       userRef.on("value", function (snapshot) {
+        console.log("in here")
         if (snapshot.exists()) {
           var data = snapshot.val();
           setUser({
@@ -76,6 +71,7 @@ const Home = () => {
             setToken(localStorage.getItem("token"));
           }
         } else {
+          console.log("in here")
           if (!localStorage.getItem("token")) {
             if (_token) {
               localStorage.setItem("token", _token);
@@ -87,8 +83,11 @@ const Home = () => {
             getUserRegistered(_token);
           }
         }
+        
       });
+      
     }, []);
+
     function getUserRegistered(token) {
       // Make a call using the token
       $.ajax({
@@ -183,4 +182,4 @@ const Home = () => {
 };
 
 export default Home;
-
+// onLoad={fire.auth().signOut()}

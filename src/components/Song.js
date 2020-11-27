@@ -8,7 +8,6 @@ const useStyles = makeStyles({
     backgroundColor: "#1db954",
     color: "#111",
     width: '60%',
-    height: '60%',
     borderStyle: "solid",
     borderWidth: 1,
     margin: '0 auto'

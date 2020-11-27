@@ -22,9 +22,9 @@ const useStyles = makeStyles({
         },
         marginLeft: 1
     },
-    menuDrop: {
-      marginTop: 30,
-      
+    popper: {
+      marginLeft: 1,
+      marginTop: 5,
     },
     menuItem: {
       placeContent: 'center',
@@ -83,7 +83,7 @@ export default function DropdownMenu() {
         aria-haspopup="true"
         onClick={handleToggle}
       />
-      <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
+      <Popper className={classes.popper} open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
           {({ TransitionProps, placement }) => (
             <Grow
               {...TransitionProps}
@@ -92,11 +92,11 @@ export default function DropdownMenu() {
               <Paper>
                 <ClickAwayListener onClickAway={handleClose}>
                   <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
-                  <MenuItem onClick={handleClose} className={classes.menuItem} onClick={handleClose}>
+                  <MenuItem className={classes.menuItem} onClick={handleClose}>
                     <SettingsIcon />
                     <Typography className={classes.dropText}>Settings</Typography>
                   </MenuItem>
-                  <MenuItem onClick={handleClose} className={classes.menuItem} onClick={() => fire.auth().signOut()}>
+                  <MenuItem className={classes.menuItem} onClick={() => fire.auth().signOut()}>
                     <MeetingRoomIcon />
                   <Typography className={classes.dropText}>Sign Out</Typography>
                   </MenuItem>

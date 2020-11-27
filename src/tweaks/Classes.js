@@ -16,7 +16,7 @@ const useClasses = makeStyles({
     letterSpacing: 0,
   },
 
-  //////////////////////////////////Grid stuff
+  ////////////////////////////////// Grid stuff
 
   mainGrid: {
     top: 64,
@@ -120,7 +120,6 @@ const useClasses = makeStyles({
     display: "flex",
     placeContent: "center",
   },
-  profileBanner: {},
   ppImg: {
     marginTop: "2%",
     color: "#FF1654",
@@ -156,15 +155,6 @@ const useClasses = makeStyles({
     color: "#111",
     width: "100%",
   },
-  topMusicEmptyImage: {
-    borderStyle: "solid",
-    borderWidth: 1,
-    height: 160,
-    backgroundColor: "#ffffff",
-    marginRight: "10%",
-    marginLeft: "10%",
-    marginTop: "10%",
-  },
   profileTitles: {
     fontFamily: "Century Gothic",
     fontSize: 30,
@@ -188,46 +178,6 @@ const useClasses = makeStyles({
   tabBar: {
     width: "100%",
   },
-  emptyTopMusicText: {
-    flexGrow: 1,
-    fontFamily: "Century Gothic",
-    fontSize: 25,
-    color: "#111",
-    paddingTop: "20%",
-    letterSpacing: -1,
-  },
-  playlistList: {
-    width: "30%",
-    margin: "0 auto",
-    overflowX: "hidden",
-    display: "flex",
-    flexDirection: "row",
-    scrollBehavior: "smooth",
-  },
-  playlistTitleDiv: {
-    width: "30%",
-    margin: "0 auto",
-  },
-  navigationArrows: {
-    color: "#111",
-    "&:hover": {
-      color: "#FF1654",
-      cursor: "pointer",
-    },
-  },
-  playlistDiv: {
-    color: "#FF1654",
-    width: "50%",
-    display: "flex",
-    placeContent: "center",
-    margin: "0 auto",
-  },
-  divider: {
-    backgroundColor: "#111",
-    height: 1,
-    margin: "0 auto",
-    width: "100%",
-  },
   topMusicTitle: {
     fontFamily: "Century Gothic",
     fontSize: 22,
@@ -243,6 +193,120 @@ const useClasses = makeStyles({
     letterSpacing: -1,
     margin: "3%",
   },
+  ////////////////// login stuff
+  registerWrapper: {
+    height: '100%',
+    left: 0,
+    right: 0,
+    display: 'flex',
+    position: 'fixed',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#54428E',
+  },
+  loginWrapper: {
+    height: '100%',
+    left: 0,
+    right: 0,
+    display: 'flex',
+    position: 'fixed',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FF1654',
+  },
+  formWrapper: {
+    width: '400px',
+    display: 'flex',
+    flexDirection: 'column',
+    padding: '20px 40px',
+    borderRadius: '10px',
+    boxShadow: '0px 10px 50px #555',
+    backgroundColor: '#ffffff',
+  },
+  
+  form: {
+    width: '100%',
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  
+  label: {
+    fontSize: 16,
+    marginBottom: '0.25em',
+    color: '#222',
+    fontFamily: "Century Gothic",
+    fontWeight: 'lighter',
+  },
+  
+  errorMessage: {
+    color: 'red',
+    fontWeight: 'bold',
+    fontSize: '1em',
+    display: 'relative',
+  },
+  
+  emailPassword: {
+    display: 'flex',
+    flexDirection: 'column',
+    marginBottom: '15px',
+    width: '100%'
+  },
+  
+  input: {
+    height: 22
+  },
+
+  createAccount: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  
+  createAccountButton: {
+    backgroundColor: '#1db954',
+    textTransform: 'none',
+    color: '#fff',
+    borderRadius: 10,
+    border: '2px solid #fff',
+    width: '100%',
+    marginTop: '1em',
+    padding: '8px 0px',
+    marginBottom: '0.25em',
+    "&:hover": {  
+      border: '2px solid #1db954',
+      cursor: 'pointer',
+    },
+  },
+
+  createAccountButtonText: {
+    fontWeight: 'bold',
+    fontSize: 19,
+    marginBottom: '0.25em',
+    color: '#FFFFFF',
+    fontFamily: "Century Gothic",
+  },
+  
+  createAccountA: {
+    color: '#111',
+    fontWeight: 'lighter',
+    fontWeight: 900,
+    letterSpacing: '-0.5px',
+    fontSize: '13px',
+  },
+
+  titleText: {
+    fontWeight: 'bold',
+    fontSize: 75,
+    marginBottom: '0.25em',
+    color: '#FFFFFF',
+    fontFamily: "Century Gothic",
+  },
+  titleDiv: {
+    paddingBottom: '5%'
+  }
 });
 
 export default useClasses;

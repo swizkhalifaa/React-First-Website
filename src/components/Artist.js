@@ -11,7 +11,6 @@ const useStyles = makeStyles({
     borderStyle: "solid",
     borderWidth: 1,
     margin: '0 auto',
-    height: '60%',
   },
   profileTitles: {
     fontFamily: "Century Gothic",
